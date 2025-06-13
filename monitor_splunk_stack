@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+
+  collectorfordocker:
+    image: outcoldsolutions/collectorfordocker:latest
+    volumes:
+      - /sys/fs/cgroup:/rootfs/sys/fs/cgroup:ro
+      - /proc:/rootfs/proc:ro
+      - /var/log:/rootfs/var/log:ro
+      - /var/lib/docker/:/rootfs/var/lib/docker/:ro
+      - /var/run/docker.sock:/rootfs/var/run/docker.sock:ro
+      - collector_data:/data/
+    environment:
+      - COLLECTOR__SPLUNK_URL=output.splunk__url=https://prd-p-loqsk.splunkcloud.com:8088/services/collector
+      - COLLECTOR__SPLUNK_TOKEN=output.splunk__token=c1ec6c7b-e7db-476c-b3d0-6ce932e87309
+      - COLLECTOR__SPLUNK_INSECURE=output.splunk__insecure=true
+      - COLLECTOR__ACCEPTLICENSE=general__acceptLicense=true
+      - COLLECTOR__LICENSE=general__license=RDE2MzZHU1JFMU41MjoxMDA6MTc1MjQxNjMyMzo0.bDRmgnIYECULhYxTXox8S9tfMzfrwsRpHRvCMA.jclHEnu/4/uGvt/E0UVTboCsrr5NEJk8a9PVww
+      - COLLECTOR__CLUSTER=general__fields.docker_cluster=default
+    restart: always
+    deploy:
+      mode: global
+      restart_policy:
+        condition: any
+      resources:
+        limits:
+          cpus: '1'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+    privileged: true
+
+volumes:
+  collector_data:
