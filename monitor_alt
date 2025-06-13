@@ -1,0 +1,43 @@
+version: "3.8"
+
+
+services:
+  web:
+    image: nginx:alpine
+    deploy:
+      mode: replicated
+      replicas: 3
+      placement:
+        constraints:
+          - node.role != none
+        preferences:
+          - spread: node.labels.aws_availability_zone
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+
+    logging:
+      driver: splunk
+      options:
+        splunk-token: "c1ec6c7b-e7db-476c-b3d0-6ce932e87309"
+        splunk-url: "https://prd-p-loqsk.splunkcloud.com:8088"
+        splunk-index: "gdynia"
+        splunk-sourcetype: "docker:json"
+        splunk-format: "json"
+        splunk-insecureskipverify: "true"
+        labels: "kontener_nazwa"
+        env: "ENV_VAR1,ENV_VAR2"
+        tag: "{{.ID}}"
+    labels:
+      kontener_nazwa: "nginex-rm"
+#      com.example.label2: "app"
+   
+    networks:
+      - siec-gdynia
+
+networks:
+  siec-gdynia:
+    external: true
+
+
